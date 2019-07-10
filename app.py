@@ -43,7 +43,7 @@ def run_model(run, min_weekday_usage, mode_weekday_usage, max_weekday_usage):
         "min_weekday_usage": min_weekday_usage,
         "mode_weekday_usage": mode_weekday_usage,
         "max_weekday_usage": max_weekday_usage,
-        "num_reps": 500
+        "num_reps": 10
     }
     fig = model.run(args) if run else {}
     return fig

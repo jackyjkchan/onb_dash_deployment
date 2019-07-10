@@ -346,41 +346,6 @@ def run(args, offline=False):
     if offline:
         py.offline.plot(fig, filename='Est_Inv_Level.html')
 
-    # inv position
-    text2 = "{}'s Estimated Sample Inventory Position Path for Review every {} Days and ({},{}) Inventory Control Policy".format(
-        item_name, frequency, min_level, max_level)
-    trace5 = go.Scatter(
-        x=x,
-        y=samplePosn_mean,
-        error_y=dict(type='data', array=yerr2, visible=True, color='#85144B'),
-        mode='lines+markers',
-        name='Average Inventory Position')
-    trace6 = go.Scatter(x=x,
-                        y=samplePosn_5,
-                        mode='lines',
-                        name='5th Percentile',
-                        line=dict(dash='dash'))
-    trace7 = go.Scatter(x=x,
-                        y=samplePosn_95,
-                        mode='lines',
-                        name='95th Percentile',
-                        line=dict(dash='dash'))
-    data2 = [trace5, trace6, trace7, trace3, trace4]
-    layout2 = go.Layout(
-        title=go.layout.Title(
-            text=text2),
-        xaxis=go.layout.XAxis(
-            title=go.layout.xaxis.Title(
-                text='Days')),
-        yaxis=go.layout.YAxis(
-            title=go.layout.yaxis.Title(
-                text='Beginning of Day Inventory Position'))
-    )
-    fig2 = {
-        'data': data2,
-        'layout': layout2,
-    }
-    # py.offline.plot(fig2, filename='Est_Inv_Posn')
     return fig
 
 

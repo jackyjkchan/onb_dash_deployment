@@ -327,11 +327,17 @@ def run(args, offline=False):
                         line=dict(color='rgb(179,166 ,253 )'))
 
     data = [trace0, trace1, trace2, trace3, trace4]
-    layout = dict(
-              title = text,
-              yaxis = "Days",
-              xaxis = 'Beginning of Day Inventory Level'
-             )
+
+    layout = go.Layout(
+        title=text,
+        hovermode='closest',
+        xaxis=dict(
+            title='Days'
+        ),
+        yaxis=dict(
+            title='Beginning of Day Inventory Level',
+        ),
+    )
 
     fig = {
         'data': data,

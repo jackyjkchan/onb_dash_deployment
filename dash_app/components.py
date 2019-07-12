@@ -1,5 +1,6 @@
 import dash
 from dash.dependencies import Input, Output
+import dash_table
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
@@ -7,7 +8,7 @@ import dash_bootstrap_components as dbc
 demand_histogram = [dcc.Graph(id='demand_histogram')]
 
 weekday_usage_setup = [
-    html.Button(id='item_demand_show', n_clicks=0, children='Item Demand Inputs'),
+    dbc.Button(id='item_demand_show', n_clicks=0, children='Item Demand Inputs'),
     html.Div(id="item_demand_components", children=[
         dbc.Row([
             dbc.Col([
@@ -67,7 +68,7 @@ weekday_usage_setup = [
 ]
 
 ordering_policy_setup = [
-    html.Button(id='policy_show', n_clicks=0, children='Ordering Policy Inputs'),
+    dbc.Button(id='policy_show', n_clicks=0, children='Ordering Policy Inputs'),
     html.Div(id="policy_components", children=[
         html.Div(children='''max_level'''),
         dcc.Input(
@@ -175,7 +176,9 @@ run_button = [
 
 simulation_outputs = [
     html.Div(children='Results'),
-    html.Div(children=[dcc.Graph(id='inventory_trace')],
-             style={'display': 'inline-block', 'width': '75%', 'height': '100%'}
-             )
+    dash_table.DataTable(id='table'),
+    html.Div(children=[
+        dcc.Graph(id='inventory_trace')],
+        style={'display': 'inline-block', 'width': '100%', 'height': '100%'}
+    )
 ]

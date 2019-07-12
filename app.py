@@ -2,6 +2,7 @@ import dash
 from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
 import dash_html_components as html
+import pandas as pd
 
 import dash_bootstrap_components as dbc
 import dash_app.components as components
@@ -12,11 +13,11 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.GRID])
 
 app.layout = html.Div([
     components.work_in_progress_dialog,
-    html.Div([*components.weekday_usage_setup]),
-    html.Div([*components.ordering_policy_setup]),
-    html.Div([*components.ordering_lead_time_setup]),
-    html.Div([*components.initial_conditions]),
-    html.Div([*components.simulation_settings]),
+    dbc.Row(dbc.Col([*components.weekday_usage_setup])),
+    dbc.Row(dbc.Col([*components.ordering_policy_setup])),
+    dbc.Row(dbc.Col([*components.ordering_lead_time_setup])),
+    dbc.Row(dbc.Col([*components.initial_conditions])),
+    dbc.Row(dbc.Col([*components.simulation_settings])),
     *components.run_button,
     *components.simulation_outputs
 ])
@@ -119,7 +120,9 @@ def sim_settings_show(n_clicks):
 
 
 @app.callback(
-    Output(component_id='inventory_trace', component_property='figure'),
+    [Output(component_id='inventory_trace', component_property='figure'),
+     Output(component_id='table', component_property='columns'),
+     Output(component_id='table', component_property='data')],
     [Input(component_id='run_button', component_property='n_clicks')],
     [State(component_id='min_weekday_usage', component_property='value'),
      State(component_id='mode_weekday_usage', component_property='value'),
@@ -161,8 +164,11 @@ def run_model(run,
         "RunLength": sim_length,
         "num_reps": reps
     }
-    fig = model.run(args) if run else {}
-    return fig
+
+    fig, df = model.run(args) if run else ({}, pd.DataFrame())
+    columns = [{"name": i, "id": i} for i in df.columns]
+    data = df.to_dict('records')
+    return fig, columns, data
 
 
 if __name__ == '__main__':

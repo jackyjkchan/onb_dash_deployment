@@ -251,6 +251,20 @@ def run(args, offline=False):
     print("\nThe expected highest daily inventory level and the 95% confdence interval for the given policy is:",
           t_mean_confidence_interval(AllMaxInvLevel, 0.05))
 
+    fill_rate_m, fill_rate_l, fill_rate_u = t_mean_confidence_interval(AllFillRate, 0.05)
+    inv_lvl_m, inv_lvl_l, inv_lvl_u = t_mean_confidence_interval(AllMeanInvLevel, 0.05)
+    min_lvl_m, min_lvl_l, min_lvl_u = t_mean_confidence_interval(AllMinInvLevel, 0.05)
+    max_lvl_m, max_lvl_l, max_lvl_u = t_mean_confidence_interval(AllMaxInvLevel, 0.05)
+
+
+    summary_df = pd.DataFrame({
+        "Metric": ["Fill Rate", "Inventory Level", "Min Inventory Level", "Max Inventory Level"],
+        "Expectation": [fill_rate_m, inv_lvl_m, min_lvl_m, max_lvl_m],
+        "5th Percentile": [fill_rate_l, inv_lvl_l, min_lvl_l, max_lvl_l],
+        "95% Percentile": [fill_rate_u, inv_lvl_u, min_lvl_u, max_lvl_u]
+    })
+    print(summary_df)
+
     # sample path building
     # put all inventory levels for each day together
     Daily = []
@@ -347,7 +361,7 @@ def run(args, offline=False):
     if offline:
         py.offline.plot(fig, filename='Est_Inv_Level.html')
 
-    return fig
+    return fig, summary_df
 
 
 if __name__ == "__main__":

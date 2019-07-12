@@ -259,9 +259,9 @@ def run(args, offline=False):
 
     summary_df = pd.DataFrame({
         "Metric": ["Fill Rate", "Inventory Level", "Min Inventory Level", "Max Inventory Level"],
-        "Expectation": [fill_rate_m, inv_lvl_m, min_lvl_m, max_lvl_m],
-        "5th Percentile": [fill_rate_l, inv_lvl_l, min_lvl_l, max_lvl_l],
-        "95% Percentile": [fill_rate_u, inv_lvl_u, min_lvl_u, max_lvl_u]
+        "Expectation": ["{0:0.3f}".format(x) for x in [fill_rate_m, inv_lvl_m, min_lvl_m, max_lvl_m]],
+        "95% CI Lower Bound": ["{0:0.3f}".format(x) for x in [fill_rate_l, inv_lvl_l, min_lvl_l, max_lvl_l]],
+        "95% CI Upper Bound": ["{0:0.3f}".format(x) for x in [fill_rate_u, inv_lvl_u, min_lvl_u, max_lvl_u]]
     })
     print(summary_df)
 

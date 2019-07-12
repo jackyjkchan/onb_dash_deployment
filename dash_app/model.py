@@ -337,6 +337,7 @@ def run(args, offline=False):
         yaxis=dict(
             title='Beginning of Day Inventory Level',
         ),
+        height=700
     )
 
     fig = {

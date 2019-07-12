@@ -11,7 +11,12 @@ import dash_app.model as model
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.GRID])
 
 app.layout = html.Div([
-    *components.weekday_usage_setup,
+    components.work_in_progress_dialog,
+    html.Div([*components.weekday_usage_setup]),
+    html.Div([*components.ordering_policy_setup]),
+    html.Div([*components.ordering_lead_time_setup]),
+    html.Div([*components.initial_conditions]),
+    html.Div([*components.simulation_settings]),
     *components.run_button,
     *components.simulation_outputs
 ])
@@ -20,10 +25,7 @@ app.layout = html.Div([
 @app.callback(Output('item_demand_components', 'style'),
               [Input('item_demand_show', 'n_clicks')])
 def item_demand_show(n_clicks):
-    if n_clicks % 2:
-        return {'display': 'block'}
-    else:
-        return {'display': 'none'}
+    return {'display': 'block'} if n_clicks % 2 else {'display': 'none'}
 
 
 @app.callback(
@@ -39,7 +41,7 @@ def weekday_usage_mode_constraint(min_weekday_usage):
      Output(component_id='max_weekday_usage', component_property='value')],
     [Input(component_id='mode_weekday_usage', component_property='value')])
 def weekday_usage_max_constraint(mode_weekday_usage):
-    return mode_weekday_usage, mode_weekday_usage
+    return mode_weekday_usage, mode_weekday_usage + 1
 
 
 @app.callback(
@@ -50,12 +52,70 @@ def weekend_usage_mode_constraint(min_weekend_usage):
     return min_weekend_usage, min_weekend_usage
 
 
+@app.callback(Output('policy_components', 'style'),
+              [Input('policy_show', 'n_clicks')])
+def item_demand_show(n_clicks):
+    return {'display': 'block'} if n_clicks % 2 else {'display': 'none'}
+
+
 @app.callback(
     [Output(component_id='max_weekend_usage', component_property='min'),
      Output(component_id='max_weekend_usage', component_property='value')],
     [Input(component_id='mode_weekend_usage', component_property='value')])
 def weekend_usage_max_constraint(mode_weekend_usage):
-    return mode_weekend_usage, mode_weekend_usage
+    return mode_weekend_usage, mode_weekend_usage + 1
+
+
+@app.callback(
+    [Output(component_id='order_min_level', component_property='max'),
+     Output(component_id='order_min_level', component_property='value')],
+    [Input(component_id='order_max_level', component_property='value')],
+    [State(component_id='order_min_level', component_property='value')])
+def order_min_constraint(order_max_level, order_min_level):
+    value = order_max_level if order_min_level > order_max_level else order_min_level
+    return order_max_level, value
+
+
+@app.callback(Output('lead_time_components', 'style'),
+              [Input('lead_time_show', 'n_clicks')])
+def lead_time_show(n_clicks):
+    return {'display': 'block'} if n_clicks % 2 else {'display': 'none'}
+
+
+@app.callback(
+    [Output(component_id='mode_lt', component_property='min'),
+     Output(component_id='mode_lt', component_property='value')],
+    [Input(component_id='min_lt', component_property='value')])
+def weekday_usage_mode_constraint(min_lt):
+    return min_lt, min_lt
+
+
+@app.callback(
+    [Output(component_id='max_lt', component_property='min'),
+     Output(component_id='max_lt', component_property='value')],
+    [Input(component_id='mode_lt', component_property='value')])
+def weekday_usage_max_constraint(mode_lt):
+    return mode_lt, mode_lt + 1
+
+
+@app.callback(Output('initialization_components', 'style'),
+              [Input('initialization_show', 'n_clicks')])
+def lead_time_show(n_clicks):
+    return {'display': 'block'} if n_clicks % 2 else {'display': 'none'}
+
+
+@app.callback(Output('wip_dialog', 'displayed'),
+              [Input('initial_orders', 'value')])
+def display_confirm(value):
+    if value:
+        return True
+    return False
+
+
+@app.callback(Output('simulation_settings_components', 'style'),
+              [Input('simulation_settings_show', 'n_clicks')])
+def sim_settings_show(n_clicks):
+    return {'display': 'block'} if n_clicks % 2 else {'display': 'none'}
 
 
 @app.callback(
@@ -66,11 +126,23 @@ def weekend_usage_max_constraint(mode_weekend_usage):
      State(component_id='max_weekday_usage', component_property='value'),
      State(component_id='min_weekend_usage', component_property='value'),
      State(component_id='mode_weekend_usage', component_property='value'),
-     State(component_id='max_weekend_usage', component_property='value')
-     ])
+     State(component_id='max_weekend_usage', component_property='value'),
+     State(component_id='order_max_level', component_property='value'),
+     State(component_id='order_min_level', component_property='value'),
+     State(component_id='frequency', component_property='value'),
+     State(component_id='min_lt', component_property='value'),
+     State(component_id='mode_lt', component_property='value'),
+     State(component_id='max_lt', component_property='value'),
+     State(component_id="initial_inventory", component_property='value'),
+     State(component_id="sim_length", component_property='value'),
+     State(component_id="reps", component_property='value')])
 def run_model(run,
               min_weekday_usage, mode_weekday_usage, max_weekday_usage,
-              min_weekend_usage, mode_weekend_usage, max_weekend_usage):
+              min_weekend_usage, mode_weekend_usage, max_weekend_usage,
+              order_max_level, order_min_level, frequency,
+              min_lt, mode_lt, max_lt,
+              initial_inventory,
+              sim_length, reps):
     args = {
         "min_weekday_usage": min_weekday_usage,
         "mode_weekday_usage": mode_weekday_usage,
@@ -78,7 +150,16 @@ def run_model(run,
         "min_weekend_usage": min_weekend_usage,
         "mode_weekend_usage": mode_weekend_usage,
         "max_weekend_usage": max_weekend_usage,
-        "num_reps": 10
+        "max_level": order_max_level,
+        "min_level": order_min_level,
+        "frequency": frequency,
+        "min_lt": min_lt,
+        "mode_lt": mode_lt,
+        "max_lt": max_lt,
+        "num_reps": 10,
+        "current_inventory_level": initial_inventory,
+        "RunLength": sim_length,
+        "num_reps": reps
     }
     fig = model.run(args) if run else {}
     return fig

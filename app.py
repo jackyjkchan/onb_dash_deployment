@@ -14,7 +14,7 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.layout = html.Div(
     [
         dbc.Container([
-            html.H1("Supply Chain Simulation"),
+            html.H1("Preoperative Consumable Inventory Simulator"),
             components.work_in_progress_dialog,
             html.Div(id="settings", children=[
                 dbc.Row(dbc.Col([*components.weekday_usage_setup])),

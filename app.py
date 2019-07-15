@@ -29,7 +29,7 @@ app.layout = html.Div(
                        inventory to be used, and are used when required in surgery. Items are ordered when a review is 
                        conducted and the level of inventory for an item is at or below its reorder point.
                        """),
-                html.A("See Full Documentation", href="Documentation.pdf"),
+                html.A("See Full Documentation", href="assets/Documentation.pdf"),
                 dbc.Row(dbc.Col([*components.weekday_usage_setup])),
                 dbc.Row(dbc.Col([*components.ordering_policy_setup])),
                 dbc.Row(dbc.Col([*components.ordering_lead_time_setup])),

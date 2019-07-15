@@ -9,24 +9,31 @@ import dash_app.components as components
 import dash_app.graphs as graphs
 import dash_app.model as model
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.GRID])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
-app.layout = html.Div([
-    components.work_in_progress_dialog,
-    dbc.Row(dbc.Col([*components.weekday_usage_setup])),
-    dbc.Row(dbc.Col([*components.ordering_policy_setup])),
-    dbc.Row(dbc.Col([*components.ordering_lead_time_setup])),
-    dbc.Row(dbc.Col([*components.initial_conditions])),
-    dbc.Row(dbc.Col([*components.simulation_settings])),
-    *components.run_button,
-    *components.simulation_outputs
-])
+app.layout = html.Div(
+    [
+        dbc.Container([
+            html.H1("Supply Chain Simulation"),
+            components.work_in_progress_dialog,
+            html.Div(id="settings", children=[
+                dbc.Row(dbc.Col([*components.weekday_usage_setup])),
+                dbc.Row(dbc.Col([*components.ordering_policy_setup])),
+                dbc.Row(dbc.Col([*components.ordering_lead_time_setup])),
+                dbc.Row(dbc.Col([*components.initial_conditions])),
+                dbc.Row(dbc.Col([*components.simulation_settings]))
+            ]),
+            *components.run_button,
+            *components.simulation_outputs
+        ], fluid=True)
+    ])
 
 
-@app.callback(Output('item_demand_components', 'style'),
-              [Input('item_demand_show', 'n_clicks')])
+@app.callback([Output('settings', 'style'),
+               Output('show_hide_settings', 'children')],
+              [Input('show_hide_settings', 'n_clicks')])
 def item_demand_show(n_clicks):
-    return {'display': 'block'} if n_clicks % 2 else {'display': 'none'}
+    return ({'display': 'none'}, "Show") if n_clicks % 2 else ({'display': 'block'}, "Hide")
 
 
 @app.callback(
@@ -53,10 +60,10 @@ def weekend_usage_mode_constraint(min_weekend_usage):
     return min_weekend_usage, min_weekend_usage
 
 
-@app.callback(Output('policy_components', 'style'),
-              [Input('policy_show', 'n_clicks')])
-def item_demand_show(n_clicks):
-    return {'display': 'block'} if n_clicks % 2 else {'display': 'none'}
+# @app.callback(Output('policy_components', 'style'),
+#               [Input('policy_show', 'n_clicks')])
+# def item_demand_show(n_clicks):
+#     return {'display': 'block'} if n_clicks % 2 else {'display': 'none'}
 
 
 @app.callback(
@@ -77,10 +84,10 @@ def order_min_constraint(order_max_level, order_min_level):
     return order_max_level, value
 
 
-@app.callback(Output('lead_time_components', 'style'),
-              [Input('lead_time_show', 'n_clicks')])
-def lead_time_show(n_clicks):
-    return {'display': 'block'} if n_clicks % 2 else {'display': 'none'}
+# @app.callback(Output('lead_time_components', 'style'),
+#               [Input('lead_time_show', 'n_clicks')])
+# def lead_time_show(n_clicks):
+#     return {'display': 'block'} if n_clicks % 2 else {'display': 'none'}
 
 
 @app.callback(
@@ -99,10 +106,10 @@ def weekday_usage_max_constraint(mode_lt):
     return mode_lt, mode_lt + 1
 
 
-@app.callback(Output('initialization_components', 'style'),
-              [Input('initialization_show', 'n_clicks')])
-def lead_time_show(n_clicks):
-    return {'display': 'block'} if n_clicks % 2 else {'display': 'none'}
+# @app.callback(Output('initialization_components', 'style'),
+#               [Input('initialization_show', 'n_clicks')])
+# def lead_time_show(n_clicks):
+#     return {'display': 'block'} if n_clicks % 2 else {'display': 'none'}
 
 
 @app.callback(Output('wip_dialog', 'displayed'),
@@ -113,10 +120,10 @@ def display_confirm(value):
     return False
 
 
-@app.callback(Output('simulation_settings_components', 'style'),
-              [Input('simulation_settings_show', 'n_clicks')])
-def sim_settings_show(n_clicks):
-    return {'display': 'block'} if n_clicks % 2 else {'display': 'none'}
+# @app.callback(Output('simulation_settings_components', 'style'),
+#               [Input('simulation_settings_show', 'n_clicks')])
+# def sim_settings_show(n_clicks):
+#     return {'display': 'block'} if n_clicks % 2 else {'display': 'none'}
 
 
 @app.callback(

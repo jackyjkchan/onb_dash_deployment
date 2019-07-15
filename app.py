@@ -14,9 +14,22 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.layout = html.Div(
     [
         dbc.Container([
-            html.H1("Preoperative Consumable Inventory Simulator"),
+            html.H1("Consumable Item Inventory Policy Simulator"),
             components.work_in_progress_dialog,
             html.Div(id="settings", children=[
+                html.H2("Introduction"),
+                html.P("""
+                       This software is made for logistics and inventory managers to help them evaluate the performance 
+                       of inventory control policies on disposable surgical supplies. It is intended to help managers 
+                       set reorder points, order up to points, and review frequencies that will provide the right 
+                       disposable surgical item at the right time in the desired quantity to enable a high-quality of 
+                       care for surgery patients while lowering inventory costs. It is intended to provide performance 
+                       evaluation for business-as-usual scenarios. The software simulates the disposable surgical 
+                       supplies inventory core where disposable surgical supplies arrive to the inventory core, wait in 
+                       inventory to be used, and are used when required in surgery. Items are ordered when a review is 
+                       conducted and the level of inventory for an item is at or below its reorder point.
+                       """),
+                html.A("See Full Documentation", href="Documentation.pdf"),
                 dbc.Row(dbc.Col([*components.weekday_usage_setup])),
                 dbc.Row(dbc.Col([*components.ordering_policy_setup])),
                 dbc.Row(dbc.Col([*components.ordering_lead_time_setup])),
@@ -37,41 +50,31 @@ def item_demand_show(n_clicks):
 
 
 @app.callback(
-    [Output(component_id='mode_weekday_usage', component_property='min'),
-     Output(component_id='mode_weekday_usage', component_property='value')],
-    [Input(component_id='min_weekday_usage', component_property='value')])
-def weekday_usage_mode_constraint(min_weekday_usage):
-    return min_weekday_usage, min_weekday_usage
+    Output(component_id='mode_weekday_usage', component_property='max'),
+    [Input(component_id='max_weekday_usage', component_property='value')])
+def weekday_usage_mode_constraint(max_weekday_usage):
+    return max_weekday_usage-1
 
 
 @app.callback(
-    [Output(component_id='max_weekday_usage', component_property='min'),
-     Output(component_id='max_weekday_usage', component_property='value')],
+    Output(component_id='min_weekday_usage', component_property='max'),
     [Input(component_id='mode_weekday_usage', component_property='value')])
-def weekday_usage_max_constraint(mode_weekday_usage):
-    return mode_weekday_usage, mode_weekday_usage + 1
+def weekday_usage_min_constraint(mode_weekday_usage):
+    return mode_weekday_usage
 
 
 @app.callback(
-    [Output(component_id='mode_weekend_usage', component_property='min'),
-     Output(component_id='mode_weekend_usage', component_property='value')],
-    [Input(component_id='min_weekend_usage', component_property='value')])
-def weekend_usage_mode_constraint(min_weekend_usage):
-    return min_weekend_usage, min_weekend_usage
-
-
-# @app.callback(Output('policy_components', 'style'),
-#               [Input('policy_show', 'n_clicks')])
-# def item_demand_show(n_clicks):
-#     return {'display': 'block'} if n_clicks % 2 else {'display': 'none'}
+    Output(component_id='mode_weekend_usage', component_property='max'),
+    [Input(component_id='max_weekend_usage', component_property='value')])
+def weekday_usage_mode_constraint(max_weekday_usage):
+    return max_weekday_usage-1
 
 
 @app.callback(
-    [Output(component_id='max_weekend_usage', component_property='min'),
-     Output(component_id='max_weekend_usage', component_property='value')],
+    Output(component_id='min_weekend_usage', component_property='max'),
     [Input(component_id='mode_weekend_usage', component_property='value')])
-def weekend_usage_max_constraint(mode_weekend_usage):
-    return mode_weekend_usage, mode_weekend_usage + 1
+def weekday_usage_min_constraint(mode_weekday_usage):
+    return mode_weekday_usage
 
 
 @app.callback(
@@ -91,25 +94,17 @@ def order_min_constraint(order_max_level, order_min_level):
 
 
 @app.callback(
-    [Output(component_id='mode_lt', component_property='min'),
-     Output(component_id='mode_lt', component_property='value')],
-    [Input(component_id='min_lt', component_property='value')])
-def weekday_usage_mode_constraint(min_lt):
-    return min_lt, min_lt
+    Output(component_id='mode_lt', component_property='max'),
+    [Input(component_id='max_lt', component_property='value')])
+def weekday_usage_mode_constraint(max_lt):
+    return max_lt-1
 
 
 @app.callback(
-    [Output(component_id='max_lt', component_property='min'),
-     Output(component_id='max_lt', component_property='value')],
+    Output(component_id='min_lt', component_property='max'),
     [Input(component_id='mode_lt', component_property='value')])
 def weekday_usage_max_constraint(mode_lt):
-    return mode_lt, mode_lt + 1
-
-
-# @app.callback(Output('initialization_components', 'style'),
-#               [Input('initialization_show', 'n_clicks')])
-# def lead_time_show(n_clicks):
-#     return {'display': 'block'} if n_clicks % 2 else {'display': 'none'}
+    return mode_lt
 
 
 @app.callback(Output('wip_dialog', 'displayed'),

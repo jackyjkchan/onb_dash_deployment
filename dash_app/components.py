@@ -10,64 +10,68 @@ demand_histogram = [dcc.Graph(id='demand_histogram')]
 weekday_usage_setup = [
     html.H3(id='item_demand_show', children='Item Demand Inputs'),
     html.P("""
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum id lectus at ligula ultrices fringilla. Praesent in dignissim lacus. Fusce iaculis arcu semper convallis finibus. Pellentesque et cursus sem. Nulla auctor, nunc in interdum sagittis, eros tellus suscipit sem, sit amet tempor purus orci sed sapien. Donec eu lectus sit amet leo venenatis vulputate. Ut blandit ligula lorem, sed mollis tellus congue ac. Donec eu commodo ex, sed tempor massa. Nam nec fringilla mi.
+    What is the minimum, most frequent, and maximum number of items used on a typical weekday? What is the minimum, 
+    most frequent, and maximum number of items used on a typical Saturday or Sunday? Weekend usage values are inputted 
+    separately from the weekday usage values to allow for a reduction in surgery that generally occur on weekends. 
+    However, if the usage of an item is consistent across all days of the week, the weekend usage values should equal 
+    the weekday values.
     """),
     dbc.Row([
         dbc.Col([
-            html.Label(children='''min_weekday_usage:'''),
+            html.Label(children='''Max Weekday Usage:'''),
             html.A(" "),
             dcc.Input(
-                id='min_weekday_usage',
+                id='max_weekday_usage',
                 type="number",
                 value=1,
-                min=0
+                min=1,
             )
         ], width=4),
         dbc.Col([
-            html.Label(children='''mode_weekday_usage:'''),
+            html.Label(children='''Mode Weekday Usage:'''),
             html.A(" "),
             dcc.Input(
                 id='mode_weekday_usage',
-                value=1,
+                value=0,
                 type="number"
             )
         ], width=4),
         dbc.Col([
-            html.Label(children='''max_weekday_usage:'''),
+            html.Label(children='''Min Weekday Usage:'''),
             html.A(" "),
             dcc.Input(
-                id='max_weekday_usage',
-                value=2,
+                id='min_weekday_usage',
+                value=0,
                 type="number"
             )
         ], width=4)
     ]),
     dbc.Row([
         dbc.Col([
-            html.Label(children='''min_weekend_usage:'''),
+            html.Label(children='''Max Weekend Usage:'''),
             html.A(" "),
             dcc.Input(
-                id='min_weekend_usage',
+                id='max_weekend_usage',
                 value=1,
                 type="number",
                 min=0
             )
         ], width=4),
         dbc.Col([
-            html.Label(children='''mode_weekend_usage:'''),
+            html.Label(children='''Mode Weekend Usage:'''),
             html.A(" "),
             dcc.Input(
                 id='mode_weekend_usage',
-                value=1,
+                value=0,
                 type="number"
             )
         ], width=4),
         dbc.Col([
-            html.Label(children='''max_weekend_usage:'''),
+            html.Label(children='''Min Weekday Usage:'''),
             html.A(" "),
             dcc.Input(
-                id='max_weekend_usage',
-                value=2,
+                id='min_weekend_usage',
+                value=0,
                 type="number"
             )
         ], width=4)
@@ -77,29 +81,41 @@ weekday_usage_setup = [
 ordering_policy_setup = [
     html.H3(id='policy_show', children='Ordering Policy Inputs'),
     html.P("""
-Fusce posuere condimentum tristique. Pellentesque ex sapien, imperdiet sit amet est ac, ullamcorper posuere neque. Pellentesque rhoncus semper sapien nec egestas. Ut non egestas lorem. Aliquam erat volutpat. Cras tristique luctus erat, vel ultricies felis tincidunt sit amet. Vestibulum pretium, ligula nec aliquet hendrerit, felis felis convallis turpis, sed gravida leo libero nec purus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Vestibulum eleifend turpis elit, ut dignissim magna consectetur eu. Fusce sit amet ligula ullamcorper, mollis neque sit amet, tempus neque.
+    Frequency of Review: How many business days are there between each review of the inventory level? 
+    This parameter can be toggled to test different frequencies of review, while the default value is 1 day 
+    representing review every business day.
+    """),
+    html.P("""
+    Reorder Point: After a review of the inventory is conducted, the inventory level is compared to the reorder point. 
+    If the inventory level in the core drops down to at or below the reorder point, then an order is placed.
+    """),
+    html.P("""
+    Order Up to Point: After it is determined that an order must be placed, the amount of inventory to be ordered has 
+    to be determined. A common way that hospitals determine the order quantity is by using an order up to point to 
+    represent the number of items the hospital should have on hand and on route.
     """),
     dbc.Row([
         dbc.Col([
-            html.Label(children='''max_level:'''),
+            html.Label(children='''Order Up to Point:'''),
             html.A(" "),
             dcc.Input(
                 id='order_max_level',
                 value=1,
-                type="number"
+                type="number",
+                min=1
             )
         ], width=4),
         dbc.Col([
-            html.Label(children='''min_level:'''),
+            html.Label(children='''Reorder Point:'''),
             html.A(" "),
             dcc.Input(
                 id='order_min_level',
-                value=1,
+                value=0,
                 type="number"
             )
         ], width=4),
         dbc.Col([
-            html.Label(children='''frequency'''),
+            html.Label(children='''Frequency:'''),
             html.A(" "),
             dcc.Input(
                 id='frequency',
@@ -115,37 +131,37 @@ Fusce posuere condimentum tristique. Pellentesque ex sapien, imperdiet sit amet 
 ordering_lead_time_setup = [
     html.H3(id='lead_time_show', children='Ordering Lead Time Inputs'),
     html.P("""
-Mauris in purus consectetur, semper nunc eu, bibendum arcu. Nunc viverra nec nunc ac malesuada. Morbi vitae blandit justo. Nunc eget convallis velit. Nullam pretium lorem id mi pellentesque, aliquet euismod lacus posuere. Sed non purus interdum, fringilla lacus a, auctor massa. In quis blandit leo.
+    What is the minimum, most frequent, and maximum number of business days between when an order is placed and the order 
+    arrives and is unpacked into the inventory core?
     """),
     dbc.Row([
         dbc.Col([
-            html.Label(children='''min_lt:'''),
-            html.A(" "),
-            dcc.Input(
-                id='min_lt',
-                value=1,
-                type="number",
-                step=1
-            )
-        ], width=4),
-        dbc.Col([
-            html.Label(children='''mode_lt:'''),
-            html.A(" "),
-            dcc.Input(
-                id='mode_lt',
-                value=1,
-                type="number",
-                step=1
-            )
-        ], width=4),
-        dbc.Col([
-            html.Label(children='''max_lt:'''),
+            html.Label(children='''Max Lead Time:'''),
             html.A(" "),
             dcc.Input(
                 id='max_lt',
-                value=2,
+                value=1,
                 type="number",
-                min=1,
+                step=1
+            )
+        ], width=4),
+        dbc.Col([
+            html.Label(children='''Mode Lead Time:'''),
+            html.A(" "),
+            dcc.Input(
+                id='mode_lt',
+                value=0,
+                type="number",
+                step=1
+            )
+        ], width=4),
+        dbc.Col([
+            html.Label(children='''Min Lead Time:'''),
+            html.A(" "),
+            dcc.Input(
+                id='min_lt',
+                type="number",
+                value=0,
                 step=1
             )
         ], width=4)
@@ -155,7 +171,7 @@ Mauris in purus consectetur, semper nunc eu, bibendum arcu. Nunc viverra nec nun
 initial_conditions = [
     html.H3(id='initialization_show', n_clicks=0, children='Initialization Settings'),
     html.P("""
-Sed commodo in mi id ornare. Sed feugiat erat in urna malesuada ultrices. Nulla sit amet metus et diam euismod condimentum varius quis urna. In id mauris a nibh porttitor volutpat ac sit amet purus. Nulla facilisi. Nam consequat ultricies metus, vitae consectetur ligula condimentum non. Donec tincidunt justo nec diam venenatis euismod ac porta felis. Vestibulum euismod, elit laoreet volutpat feugiat, ex nisi pretium est, vel aliquet ipsum metus lobortis ligula. In venenatis, dui quis fringilla pulvinar, ante nibh pretium urna, ac commodo diam elit faucibus arcu. Proin volutpat mollis egestas. Ut efficitur aliquam neque et posuere. Sed facilisis enim metus, vitae hendrerit purus vehicula in.
+    Current Inventory Level: How many items are currently in the inventory core?
     """),
     dbc.Row([
         dbc.Col([
@@ -184,31 +200,32 @@ Sed commodo in mi id ornare. Sed feugiat erat in urna malesuada ultrices. Nulla 
 simulation_settings = [
     html.H3(id='simulation_settings_show', children='Simulation Settings'),
     html.P("""
-Vivamus venenatis lectus at lacus vehicula, a porta nisi pretium. Maecenas a faucibus turpis, a tincidunt orci. Vestibulum laoreet dui sit amet sem blandit sodales. Donec auctor tempus metus, iaculis tincidunt purus varius ut. Vivamus sapien justo, iaculis sed sapien non, iaculis rutrum mauris. Fusce ut ligula sed orci tristique lacinia sit amet non leo. Nulla facilisi. Proin nisi ex, tincidunt vel lectus vitae, lacinia scelerisque est. Duis ornare eros vel venenatis laoreet. Sed posuere risus non congue auctor. Maecenas est urna, laoreet quis tristique nec, rutrum in tellus. Nunc viverra molestie nisi, pulvinar mollis elit tempus eget. Morbi vel felis rhoncus, iaculis lacus id, convallis augue.
+    Forecast Horizon: How many days into the future should the inventory policy be simulated for?
+    """),
+    html.P("""
+    Replications: How many times to run this simulation in parallel for averaging results over?
     """),
     dbc.Row([
         dbc.Col([
-            html.Label(children='''Simulation Lenth:'''),
+            html.Label(children='''Forecast Horizon:'''),
             html.A(" "),
             dcc.Input(
                 id='sim_length',
                 value=100,
                 type="number",
-                min=30,
+                min=1,
                 max=1000,
-                step=10
             )
         ], width=4),
         dbc.Col([
-            html.Label(children='''Repetitions:'''),
+            html.Label(children='''Replications:'''),
             html.A(" "),
             dcc.Input(
                 id='reps',
                 value=10,
                 type="number",
-                min=10,
-                max=1000,
-                step=10
+                min=1,
+                max=1000
             )
         ], width=4)
     ])

@@ -307,8 +307,8 @@ def run(args, offline=False):
 
     yerr = samplePath_Values_error
     yerr2 = samplePosn_error
-    text = "{}'s Estimated Inventory Level Sample Path for Review every {} Days and ({},{}) Inventory Control Policy".format(
-        item_name, frequency, min_level, max_level)
+    text = "Estimated Inventory Level Sample Path for Review every {} Days and ({},{}) Inventory Control Policy".format(
+        frequency, min_level, max_level)
 
     print("Simulation time in seconds: ", elapsed_time)
 
@@ -343,7 +343,7 @@ def run(args, offline=False):
     data = [trace0, trace1, trace2, trace3, trace4]
 
     layout = go.Layout(
-        title=text,
+        title=None,
         hovermode='closest',
         xaxis=dict(
             title='Days'

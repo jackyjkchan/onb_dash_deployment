@@ -88,7 +88,7 @@ Fusce posuere condimentum tristique. Pellentesque ex sapien, imperdiet sit amet 
                 value=1,
                 type="number"
             )
-        ], width=4),
+        ], width=3),
         dbc.Col([
             html.Label(children='''min_level:'''),
             html.A(" "),
@@ -97,7 +97,7 @@ Fusce posuere condimentum tristique. Pellentesque ex sapien, imperdiet sit amet 
                 value=1,
                 type="number"
             )
-        ], width=4),
+        ], width=3),
         dbc.Col([
             html.Label(children='''frequency'''),
             html.A(" "),
@@ -108,7 +108,18 @@ Fusce posuere condimentum tristique. Pellentesque ex sapien, imperdiet sit amet 
                 min=1,
                 step=1
             )
-        ], width=4)
+        ], width=3),
+        dbc.Col([
+            html.Label(children='''unit_of_measure'''),
+            html.A(" "),
+            dcc.Input(
+                id='unit_of_measure',
+                value=2,
+                type="number",
+                min=1,
+                step=1
+            )
+        ], width=3)
     ])
 ]
 

@@ -104,7 +104,7 @@ ordering_policy_setup = [
                 type="number",
                 min=1
             )
-        ], width=4),
+        ], width=3),
         dbc.Col([
             html.Label(children='''Reorder Point:'''),
             html.A(" "),
@@ -113,7 +113,7 @@ ordering_policy_setup = [
                 value=0,
                 type="number"
             )
-        ], width=4),
+        ], width=3),
         dbc.Col([
             html.Label(children='''Frequency:'''),
             html.A(" "),
@@ -124,7 +124,18 @@ ordering_policy_setup = [
                 min=1,
                 step=1
             )
-        ], width=4)
+        ], width=3),
+        dbc.Col([
+            html.Label(children='''unit_of_measure'''),
+            html.A(" "),
+            dcc.Input(
+                id='unit_of_measure',
+                value=2,
+                type="number",
+                min=1,
+                step=1
+            )
+        ], width=3)
     ])
 ]
 

@@ -51,6 +51,10 @@ def run(args, offline=False):
     min_lt = args["min_lt"] if "min_lt" in args else 1
     mode_lt = args["mode_lt"] if "mode_lt" in args else 2
     max_lt = args["max_lt"] if "max_lt" in args else 3
+    
+    # include unit of measure
+    unit_of_order = args["unit_of_measure"] if "unit_of_measure" in args else 1 #units that orders can be placed in, default is 1
+
 
     RunLength = args["RunLength"] if "RunLength" in args else 100  # runlength of sim, the planing horizon inputted by the user
     num_reps = args["num_reps"] if "num_reps" in args else 2000  # number of reps
@@ -91,13 +95,19 @@ def run(args, offline=False):
 
     # generate usage for a particular day of the week for a particular item
     def usage(day_of_week):
-        if day_of_week in week_days:
-            usage = np.around(np.random.triangular(min_weekday_usage,
+        if day_of_week in week_days: #weekday
+            if min_weekday_usage == max_weekday_usage: #deterministic
+                usage = min_weekday_usage
+            else: 
+                usage = np.around(np.random.triangular(min_weekday_usage,
                                                    mode_weekday_usage,
                                                    max_weekday_usage,
                                                    size=None))
-        else:
-            usage = np.around(np.random.triangular(min_weekend_usage,
+        else: #weekend
+            if min_weekend_usage == max_weekend_usage: #deterministic
+                usage = min_weekend_usage
+            else:
+                usage = np.around(np.random.triangular(min_weekend_usage,
                                                    mode_weekend_usage,
                                                    max_weekend_usage,
                                                    size=None))
@@ -144,19 +154,21 @@ def run(args, offline=False):
         if count <= min_level:
             order_is_placed.append(1)
             date_of_order.append(clock)
-            order_lt = np.around(np.random.triangular(min_lt, mode_lt, max_lt, size=None))
+            if min_lt == max_lt: #deterministic
+                order_lt = min_lt
+            else: #not deterministic
+                order_lt = np.around( np.random.triangular(min_lt, mode_lt, max_lt, size=None))
+            
             order_lt = order_lt.astype(int)
             # calculate order date excluding weekends
             date_delivery = rrule(DAILY, byweekday=(MO, TU, WE, TH, FR), dtstart=clock)[order_lt]
             date_delivery = date_delivery.date()
 
             # calculate order volume based on order position
-            # calculate order quantity
-            order_quantity = max_level - _inventory_level - sum(orderq_schedule)
-            # add delivery date to schedule
-            delivery_schedule.append(date_delivery)
-            # add order quantity to schedule
-            orderq_schedule.append(order_quantity)
+            order_quantity = max_level - inventory_level - sum(orderq_schedule) #calculate order quantity
+            order_quantity = np.ceil(order_quantity/unit_of_order)*unit_of_order #ensure an order is placed in the units required 
+            delivery_schedule.append(date_delivery) #add delivery date to schedule
+            orderq_schedule.append(order_quantity) # add order quantity to schedule    
 
     def t_mean_confidence_interval(dat, alpha):
         a = 1.0 * np.array(dat)
@@ -231,7 +243,7 @@ def run(args, offline=False):
             inventory_position_rep.append(inventory_position)
             inventory_level = inventory_level_EoD  # set inventory level
 
-        # AllProbStockout.append(np.sum(stockouts_occur)/RunLength)
+        AllProbStockout.append(np.sum(stockouts_occur)/RunLength)
         AllMeanInvLevel.append(np.mean(items_in_inventory))
         AllMinInvLevel.append(np.min(items_in_inventory))
         AllMaxInvLevel.append(np.max(items_in_inventory))
@@ -244,6 +256,8 @@ def run(args, offline=False):
 
     print("The expected fill rate and the 95% confidence interval for the given policy is: ",
           t_mean_confidence_interval(AllFillRate, 0.05))
+    print("The expected probability of stockout and the 95% confidence interval for the given policy is: ",
+          t_mean_confidence_interval(AllProbStockout, 0.05))
     print("\nThe expected daily inventory level and the 95% confidence interval for the given policy is: ",
           t_mean_confidence_interval(AllMeanInvLevel, 0.05))
     print("\nThe expected lowest daily inventory level and the 95% confidence interval for the given policy is: ",
@@ -252,16 +266,17 @@ def run(args, offline=False):
           t_mean_confidence_interval(AllMaxInvLevel, 0.05))
 
     fill_rate_m, fill_rate_l, fill_rate_u = t_mean_confidence_interval(AllFillRate, 0.05)
+    prob_stockout_m, prob_stockout_l, prob_stockout_u = t_mean_confidence_interval(AllProbStockout, 0.05)
     inv_lvl_m, inv_lvl_l, inv_lvl_u = t_mean_confidence_interval(AllMeanInvLevel, 0.05)
     min_lvl_m, min_lvl_l, min_lvl_u = t_mean_confidence_interval(AllMinInvLevel, 0.05)
     max_lvl_m, max_lvl_l, max_lvl_u = t_mean_confidence_interval(AllMaxInvLevel, 0.05)
 
 
     summary_df = pd.DataFrame({
-        "Metric": ["Fill Rate", "Inventory Level", "Min Inventory Level", "Max Inventory Level"],
-        "Expectation": ["{0:0.3f}".format(x) for x in [fill_rate_m, inv_lvl_m, min_lvl_m, max_lvl_m]],
-        "95% CI Lower Bound": ["{0:0.3f}".format(x) for x in [fill_rate_l, inv_lvl_l, min_lvl_l, max_lvl_l]],
-        "95% CI Upper Bound": ["{0:0.3f}".format(x) for x in [fill_rate_u, inv_lvl_u, min_lvl_u, max_lvl_u]]
+        "Metric": ["Fill Rate","Probability Stockout", "Inventory Level", "Min Inventory Level", "Max Inventory Level"],
+        "Expectation": ["{0:0.3f}".format(x) for x in [fill_rate_m, prob_stockout_m, inv_lvl_m, min_lvl_m, max_lvl_m]],
+        "95% CI Lower Bound": ["{0:0.3f}".format(x) for x in [fill_rate_l, prob_stockout_l, inv_lvl_l, min_lvl_l, max_lvl_l]],
+        "95% CI Upper Bound": ["{0:0.3f}".format(x) for x in [fill_rate_u, prob_stockout_u, inv_lvl_u, min_lvl_u, max_lvl_u]]
     })
     print(summary_df)
 

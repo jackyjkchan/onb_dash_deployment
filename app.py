@@ -107,12 +107,12 @@ def weekday_usage_max_constraint(mode_lt):
     return mode_lt
 
 
-@app.callback(Output('wip_dialog', 'displayed'),
-              [Input('initial_orders', 'value')])
-def display_confirm(value):
-    if value:
-        return True
-    return False
+# @app.callback(Output('wip_dialog', 'displayed'),
+#               [Input('initial_orders', 'value')])
+# def display_confirm(value):
+#     if value:
+#         return True
+#     return False
 
 
 # @app.callback(Output('simulation_settings_components', 'style'),

@@ -126,7 +126,7 @@ ordering_policy_setup = [
             )
         ], width=3),
         dbc.Col([
-            html.Label(children='''unit_of_measure'''),
+            html.Label(children='''Unit of Measure'''),
             html.A(" "),
             dcc.Input(
                 id='unit_of_measure',
@@ -194,17 +194,17 @@ initial_conditions = [
                 type="number",
                 step=1
             )
-        ], width=4),
-        dbc.Col([
-            html.Label(children='''Initial Outstanding Orders:'''),
-            html.A(" "),
-            dcc.Input(
-                id='initial_orders',
-                value=0,
-                type="number",
-                step=1
-            )
-        ], width=4)
+        ], width=4)#,
+        # dbc.Col([
+        #     html.Label(children='''Initial Outstanding Orders:'''),
+        #     html.A(" "),
+        #     dcc.Input(
+        #         id='initial_orders',
+        #         value=0,
+        #         type="number",
+        #         step=1
+        #     )
+        # ], width=4)
     ])
 ]
 
